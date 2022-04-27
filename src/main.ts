@@ -10,35 +10,37 @@ import './style.css'
 
 import 'phaser';
 import { MenuScene } from './menu-scene';
+import Preloader from './preloader';
+import GameScene from './GameScene';
 
 const GameConfig: Phaser.Types.Core.GameConfig = {
   title: 'ExampleGame',
   url: 'https://github.com/digitsensitive/phaser3-typescript',
   version: '2.0',
-  width: 800,
-  height: 600,
+  width: 256,
+  height: 256,
   type: Phaser.AUTO,
   parent: 'app',
-  scene: [MenuScene],
+  scene: [Preloader, GameScene],
   input: {
     keyboard: true
   },
   physics: {
     default: 'arcade',
     arcade: {
-      gravity: { y: 0 },
+      gravity: { y: 300 },
       debug: false
     }
   },
-  backgroundColor: '#300000',
-  render: { pixelArt: false, antialias: true },
+  backgroundColor: 'black',
+  render: { pixelArt: true, antialias: false },
   scale: {
-    mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
     // `fullscreenTarget` must be defined for phones to not have
     // a small margin during fullscreen.
     fullscreenTarget: 'app',
     expandParent: false,
+    zoom: 2
   },
 };
 
