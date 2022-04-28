@@ -9,7 +9,6 @@ import './style.css'
 // `;
 
 import 'phaser';
-import { MenuScene } from './menu-scene';
 import Preloader from './preloader';
 import GameScene from './GameScene';
 
@@ -17,8 +16,8 @@ const GameConfig: Phaser.Types.Core.GameConfig = {
   title: 'ExampleGame',
   url: 'https://github.com/digitsensitive/phaser3-typescript',
   version: '2.0',
-  width: 256,
-  height: 256,
+  width: 128,
+  height: 128,
   type: Phaser.AUTO,
   parent: 'app',
   scene: [Preloader, GameScene],
@@ -29,7 +28,8 @@ const GameConfig: Phaser.Types.Core.GameConfig = {
     default: 'arcade',
     arcade: {
       gravity: { y: 300 },
-      debug: false
+      debug: true,
+      debugShowStaticBody: true,
     }
   },
   backgroundColor: 'black',
@@ -40,7 +40,7 @@ const GameConfig: Phaser.Types.Core.GameConfig = {
     // a small margin during fullscreen.
     fullscreenTarget: 'app',
     expandParent: false,
-    zoom: 2
+    zoom: 4
   },
 };
 
