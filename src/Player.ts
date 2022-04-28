@@ -1,7 +1,14 @@
 import Phaser from "phaser";
-
+enum STATE {
+  MOVE,
+  JUMP,
+  IDLE,
+  CARRY,
+}
 export default class Player extends Phaser.Physics.Arcade.Sprite {
   private direction: number = 1;
+  private currentState: STATE = STATE.IDLE;
+  private carriedObject!: Phaser.Physics.Arcade.Sprite | null;
   constructor(
     scene: Phaser.Scene,
     x: number,
@@ -10,6 +17,22 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     frame?: string | number
   ) {
     super(scene, x, y, texture, frame);
+  }
+
+  public getDirection() {
+    return this.direction;
+  }
+
+  public setCarriedObject(object: Phaser.Physics.Arcade.Sprite | null) {
+    if (!this.carriedObject && object) {
+      this.carriedObject = object;
+      console.log(this.carriedObject);
+      this.carriedObject.flipY = true;
+    }
+
+    if(this.carriedObject && !object){
+      this.carriedObject = null;
+    }
   }
 
   create() {
@@ -39,28 +62,54 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     const leftDown = cursorKeys.left?.isDown;
     const rightDown = cursorKeys.right?.isDown;
 
-    this.direction = Number(rightDown) - Number(leftDown);
+    const direction = Number(rightDown) - Number(leftDown);
     if (!cursorKeys) {
       return;
     }
 
-    if (this.direction !== 0) {
-      this.flipX = this.direction < 0;
-      this.anims.play("walk", true);
-      this.setVelocityX(this.direction * 100);
-    } else {
-      this.anims.play("idle", true);
-      this.setVelocityX(0);
+    if (this.carriedObject) {
+      this.carriedObject.body.reset(this.x, this.y - 8);
     }
 
+    if (direction !== 0) {
+      this.currentState = STATE.MOVE;
+    } else {
+      this.currentState = STATE.IDLE;
+    }
     // Jump
     if (cursorKeys.space.isDown && this.body.onFloor()) {
-      this.setVelocityY(-150);
-      this.anims.play("jump", true);
+      this.currentState = STATE.JUMP;
     }
 
     if (this.body.y > 128) {
       this.body.y = 0;
+    }
+
+    switch (this.currentState) {
+      case STATE.MOVE:
+        this.setVelocityX(this.direction * 100);
+        this.setFlipX(this.direction < 0);
+        this.anims.play("walk", true);
+        this.direction = direction;
+        break;
+      case STATE.JUMP:
+        this.setVelocityY(-150);
+        this.anims.play("jump", true);
+        if (this.carriedObject) {
+          // Throw the carried object in a direction
+          this.carriedObject.body.reset(this.carriedObject.body.x + 16 * this.direction, this.carriedObject.body.y - 8);
+          this.carriedObject.body.gameObject.setDirection(this.direction);
+          this.carriedObject.setFlipX(this.direction < 0);
+          this.carriedObject.flipY = false;
+
+          // Clean the carried object
+          this.setCarriedObject(null);
+        }
+        break;
+      case STATE.IDLE:
+        this.setVelocityX(0);
+        this.anims.play("idle", true);
+        break;
     }
   }
 }

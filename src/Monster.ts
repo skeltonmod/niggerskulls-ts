@@ -12,6 +12,11 @@ export default class Monster extends Phaser.Physics.Arcade.Sprite {
   ) {
     super(scene, x, y, texture, frame);
   }
+
+  public setDirection(direction: number) {
+    this.direction = direction;
+  }
+
   create() {
     this.anims.create({
       key: "move",
@@ -26,7 +31,7 @@ export default class Monster extends Phaser.Physics.Arcade.Sprite {
   }
 
   destroy(fromScene?: boolean | undefined): void {
-      super.destroy(fromScene);
+    super.destroy(fromScene);
   }
 
   // Set the monster's speed
@@ -35,9 +40,6 @@ export default class Monster extends Phaser.Physics.Arcade.Sprite {
   }
 
   update() {
-    if(!this){
-      return
-    }
     if (this.body.onWall()) {
       this.direction *= -1;
       this.flipX = this.direction < 0;
@@ -45,11 +47,12 @@ export default class Monster extends Phaser.Physics.Arcade.Sprite {
 
     this.body.velocity.x = this.direction * this.speed;
 
-    // destroy the monster if it touches the 
+    // Get colliding objects
+
+
+    // destroy the monster if it touches the
     if (this.body.y > 256) {
       this.destroy();
     }
   }
 }
-
-

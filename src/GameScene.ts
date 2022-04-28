@@ -37,13 +37,18 @@ export default class GameScene extends Phaser.Scene {
 
     this.monsters = this.physics.add.group({classType: Monster, runChildUpdate: true});
     this.physics.add.collider(this.monsters, background);
-    this.container = this.add.container(this.player.body.x, this.player.body.y)
-    
+    this.physics.add.overlap(this.player, this.monsters, (player, monster) => {
+      // monster.body.velocity.x = 0
+      // monster.body.velocity.y = 0
+      // monster.body.gameObject.flipY = true
+      // monster.body.reset(player.body.gameObject.x, player.body.gameObject.y - 8)
+      player.body.gameObject.setCarriedObject(monster.body.gameObject);
+      // monster.body.gameObject.setFlipX(true);
+    }, null, this);
   }
 
 
   update() {
-    // Move the enemy randomly and change direction if it hits a wall
     this.player.update(this.cursorKeys);
 
     // Spawn monster every 5 seconds
@@ -53,21 +58,5 @@ export default class GameScene extends Phaser.Scene {
       this.lastMonsterTime = this.time.now;
       console.log("spawned monster", this.monsters.getChildren());
     }
-
-    // Check if player is touching monster
-    this.monsters.getChildren().forEach(monster => {
-      if(monster){
-        if (this.physics.overlap(this.player, monster)) {
-          // monster.destroy();
-          monster.y = this.player.body.y-4
-          monster.x = this.player.body.x + 3
-          monster.body.velocity.x = 0
-          monster.body.velocity.y = 0
-          monster.flipY = true
-        }else{
-          monster.flipY = false
-        }
-      }
-    });
   }
 }
